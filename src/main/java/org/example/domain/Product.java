@@ -1,6 +1,9 @@
 package org.example.domain;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.math.BigDecimal;
+
 public class Product {
     private String productId;
     private String name;
@@ -12,14 +15,24 @@ public class Product {
     private long unitsInOrder;
     private boolean discontinued;
     private String condition;
+    private MultipartFile productImage;
 
     public Product() {
         super();
     }
+
     public Product(String productId, String name, BigDecimal unitPrice) {
         this.productId = productId;
         this.name = name;
         this.unitPrice = unitPrice;
+    }
+
+    public MultipartFile getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(MultipartFile productImage) {
+        this.productImage = productImage;
     }
 
     public String getProductId() {
@@ -118,6 +131,7 @@ public class Product {
             return false;
         return true;
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -126,6 +140,7 @@ public class Product {
                 + ((productId == null) ? 0 : productId.hashCode());
         return result;
     }
+
     @Override
     public String toString() {
         return "Product [productId=" + productId + ", name=" + name + "]";

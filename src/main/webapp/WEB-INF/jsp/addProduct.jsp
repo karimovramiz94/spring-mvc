@@ -19,10 +19,8 @@
             <p>Add products</p>
 
             <!-- Logout button -->
-            <a href="<c:url value='/j_spring_security_logout' />"
-               class="btn btn-danger btn-mini pull-right">
-               Logout
-            </a>
+            <a href="<c:url value='/logout'/>"
+               class="btn btn-danger btn-mini pull-right">Logout</a>
 
         </div>
     </div>
@@ -30,7 +28,7 @@
 
 <section class="container">
 
-<form:form modelAttribute="newProduct" class="form-horizontal">
+<form:form modelAttribute="newProduct" class="form-horizontal" enctype="multipart/form-data" method="post">
 <fieldset>
 <legend>Add new product</legend>
 
@@ -102,10 +100,18 @@
 </div>
 
 <div class="form-group">
+<label class="control-label col-lg-2" for="productImage">
+<spring:message code="addProduct.form.productImage.label"/></label>
+<div class="col-lg-10">
+<form:input id="productImage" path="productImage" type="file"
+class="form-control" />
+</div>
+</div>
+
+<div class="form-group">
 <div class="col-lg-offset-2 col-lg-10">
 <input type="submit" id="btnAdd"
-       class="btn btn-primary"
-       value="Add"/>
+       class="btn btn-primary" value="Add"/>
 </div>
 </div>
 

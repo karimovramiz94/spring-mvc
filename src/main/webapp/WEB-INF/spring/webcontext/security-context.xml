@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:security="http://www.springframework.org/schema/security"
-             xsi:schemaLocation="
-                http://www.springframework.org/schema/beans
-                https://www.springframework.org/schema/beans/spring-beans.xsd
-                http://www.springframework.org/schema/security
-                https://www.springframework.org/schema/security/spring-security-5.8.xsd">
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/security
+         http://www.springframework.org/schema/security/spring-security-5.8.xsd">
 
     <security:http auto-config="true">
-
-        <!-- Правильное выражение доступа -->
-        <security:intercept-url pattern="/products/add"
-                                access="hasRole('ADMIN')"/>
+        <security:intercept-url pattern="/products/add" access="hasRole('ADMIN')"/>
 
         <security:form-login login-page="/login"
+                             login-processing-url="/login"
                              default-target-url="/products/add"
-                             authentication-failure-url="/loginfailed"/>
+                             authentication-failure-url="/login?error"/>
 
         <security:logout logout-success-url="/logout"/>
-
     </security:http>
 
     <security:authentication-manager>
         <security:authentication-provider>
             <security:user-service>
-                <!-- {noop} обязательно для plain password -->
                 <security:user name="Admin"
                                password="{noop}Admin123"
                                authorities="ROLE_ADMIN"/>
@@ -33,4 +29,4 @@
         </security:authentication-provider>
     </security:authentication-manager>
 
-</beans:beans>
+</beans>

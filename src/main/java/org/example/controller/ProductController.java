@@ -1,19 +1,20 @@
 package org.example.controller;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import org.example.domain.Product;
-import org.example.repository.ProductRepository;
 import org.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/products")
@@ -42,7 +43,7 @@ public class ProductController {
     }
 
     @RequestMapping("/filter/{ByCriteria}")
-    public String getProductsByFilter(@MatrixVariable(pathVar= "ByCriteria") Map<String, List<String>> filterParams, Model model) {
+    public String getProductsByFilter(@MatrixVariable(pathVar = "ByCriteria") Map<String, List<String>> filterParams, Model model) {
         model.addAttribute("products",
                 productService.getProductsByFilter(filterParams));
         return "products";
@@ -62,20 +63,40 @@ public class ProductController {
         model.addAttribute("newProduct", newProduct);
         return "addProduct";
     }
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String processAddNewProductForm(@ModelAttribute("newProduct")
-            Product productToBeAdded, BindingResult result) {
+    public String processAddNewProductForm(
+            @ModelAttribute("newProduct") Product productToBeAdded,
+            BindingResult result, HttpServletRequest request) {
+
+        System.out.println("add post....");
+
         String[] suppressedFields = result.getSuppressedFields();
         if (suppressedFields.length > 0) {
             throw new RuntimeException("Attempting to bind disallowed fields: "
                     + StringUtils.arrayToCommaDelimitedString(suppressedFields));
         }
+
+        // ---- şəkli götür və serverə yaz ----
+        MultipartFile productImage = productToBeAdded.getProductImage();
+        String rootDirectory = request.getSession().getServletContext().getRealPath("/");
+
+        if (productImage != null && !productImage.isEmpty()) {
+            try {
+                productImage.transferTo(new File((rootDirectory + "resources\\images\\" + productToBeAdded.getProductId() + ".png")));
+            } catch (Exception e) {
+                throw new RuntimeException("Product Image saving failed", e);
+            }
+        }
+
         productService.addProduct(productToBeAdded);
         return "redirect:/products";
     }
 
+
     @InitBinder
     public void initialiseBinder(WebDataBinder binder) {
+        binder.setAllowedFields("productId", "name", "unitPrice", "description", "manufacturer", "category", "unitsInStock", "productImage");
         binder.setDisallowedFields("unitsInOrder", "discontinued");
     }
 
